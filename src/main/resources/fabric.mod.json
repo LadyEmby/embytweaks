@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "emby_tweaks",
+	"version": "${version}",
+	"name": "EmbyTweaks",
+	"description": "A personal package containing various tweaks for the game.",
+	"authors": [
+		"Emby"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/embytweaks/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"page.embys.EmbyTweaks"
+		],
+		"client": [
+			"page.embys.EmbyTweaksClient"
+		],
+		"fabric-datagen": [
+			"page.embys.EmbyTweaksDataGenerator"
+		]
+	},
+	"mixins": [
+		"emby_tweaks.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.21.11",
+		"java": ">=23",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

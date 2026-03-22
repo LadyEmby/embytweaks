@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "page.embys.mixin",
+  "compatibilityLevel": "JAVA_23",
+  "mixins": [
+    "FireBlockMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
