@@ -18,11 +18,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ModItemHelper {
-    public static BlockItem registerBlockItem(String name, Block block, RegistryKey<ItemGroup> itemGroup) {
-        Identifier identifier = Identifier.of(EmbyTweaks.MOD_ID, name);
-        return registerBlockItem(identifier, block, itemGroup);
-    }
-
     public static BlockItem registerBlockItem(Identifier identifier, Block block, RegistryKey<ItemGroup> itemGroup) {
         return registerBlockItem(identifier, block, itemGroup, BlockItem::new, null);
     }
@@ -39,9 +34,14 @@ public class ModItemHelper {
         return blockItem;
     }
 
-    public static Supplier<Item> registerBoatItem(String name, Function<Item.Settings, Item> item, Item.Settings settings) {
+    public static Supplier<Item> registerBoatItem(String name, Function<Item.Settings, Item> item, Item.Settings settings, RegistryKey<ItemGroup> itemGroup, Item itemPlacement) {
         RegistryKey<Item> itemRegistryKey = RegistryKey.of(RegistryKeys.ITEM, EmbyTweaks.id(name));
-        return EmbyTweaks.register(Registries.ITEM, name, () -> item.apply(settings.maxCount(1).registryKey(itemRegistryKey)));
+
+        return EmbyTweaks.register(Registries.ITEM, name, () -> {
+            Item item1 = item.apply(settings.maxCount(1).registryKey(itemRegistryKey));
+            ItemGroupEvents.modifyEntriesEvent(itemGroup).register(entries -> entries.addAfter(itemPlacement, item1));
+            return item1;
+        });
     }
 
     public static VerticallyAttachableBlockItem registerVerticallyAttachableBlockItem(Identifier identifier, Block standingBlock, Block wallBlock, Item.Settings settings, RegistryKey<ItemGroup> itemGroup, Item itemPlacement, TriFunction<Block, Block, Item.Settings, VerticallyAttachableBlockItem> factory) {

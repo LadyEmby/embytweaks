@@ -28,19 +28,6 @@ public class ModBlockHelper {
         return block;
     }
 
-    public static Block registerBlock(Identifier identifier, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings blockSettings, RegistryKey<ItemGroup> itemGroup) {
-        Block block = registerBlock(identifier, factory, blockSettings);
-        ModItemHelper.registerBlockItem(identifier, block, itemGroup);
-        return block;
-    }
-
-    public static Block registerBlock(Identifier identifier, Block block) {
-        RegistryKey<Block> blockIdentifierKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
-        block.getSettings().registryKey(blockIdentifierKey);
-        Registry.register(Registries.BLOCK, identifier, block);
-        return block;
-    }
-
     public static DoorBlock registerDoorBlock(Identifier identifier, BlockSetType blockSetType, AbstractBlock.Settings settings) {
         return (DoorBlock) registerTypeSetBlock(identifier, blockSetType, settings, DoorBlock::new);
     }
@@ -84,17 +71,6 @@ public class ModBlockHelper {
         return block;
     }
 
-    public static StairsBlock registerStairsBlock(Identifier identifier, AbstractBlock.Settings settings, RegistryKey<ItemGroup> itemGroup) {
-        StairsBlock block = registerStairsBlock(identifier, settings);
-        ModItemHelper.registerBlockItem(identifier, block, itemGroup);
-        return block;
-    }
-
-    public static StairsBlock registerStairsBlock(String name, AbstractBlock.Settings settings) {
-        Identifier identifier = Identifier.of(EmbyTweaks.MOD_ID, name);
-        return registerStairsBlock(identifier, settings);
-    }
-
     public static FenceBlock registerFenceBlock(Identifier identifier, AbstractBlock.Settings settings) {
         RegistryKey<Block> blockIdentifierKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
         FenceBlock block = new FenceBlock(settings.registryKey(blockIdentifierKey));
@@ -110,34 +86,9 @@ public class ModBlockHelper {
         return block;
     }
 
-    public static FenceBlock registerFenceBlock(Identifier identifier, AbstractBlock.Settings settings, RegistryKey<ItemGroup> itemGroup) {
-        FenceBlock block = registerFenceBlock(identifier, settings);
-        ModItemHelper.registerBlockItem(identifier, block, itemGroup);
-        return block;
-    }
-
     public static SlabBlock registerSlabBlock(Identifier identifier, AbstractBlock.Settings settings) {
         RegistryKey<Block> blockIdentifierKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
         SlabBlock block = new SlabBlock(settings.registryKey(blockIdentifierKey));
-        Registry.register(Registries.BLOCK, identifier, block);
-        return block;
-    }
-
-    public static SlabBlock registerSlabBlock(Identifier identifier, AbstractBlock.Settings settings, RegistryKey<ItemGroup> itemGroup) {
-        SlabBlock block = registerSlabBlock(identifier, settings);
-        ModItemHelper.registerBlockItem(identifier, block, itemGroup);
-        return block;
-    }
-
-    public static SlabBlock registerSlabBlock(String name, AbstractBlock.Settings settings) {
-        Identifier identifier = Identifier.of(EmbyTweaks.MOD_ID, name);
-        return registerSlabBlock(identifier, settings);
-    }
-
-    public static WallBlock registerWallBlock(String name, Block baseBlock) {
-        Identifier identifier = Identifier.of(EmbyTweaks.MOD_ID, name);
-        RegistryKey<Block> blockIdentifierKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
-        WallBlock block = new WallBlock(AbstractBlock.Settings.copy(baseBlock).registryKey(blockIdentifierKey));
         Registry.register(Registries.BLOCK, identifier, block);
         return block;
     }
@@ -163,11 +114,8 @@ public class ModBlockHelper {
     }
 
     public static boolean blockIsInTagCollection(BlockState blockState, Collection<TagKey<Block>> tagKeyWhitelist, Collection<TagKey<Block>> tagKeyBlacklist) {
-        EmbyTweaks.LOGGER.info("Checking tag whitelist for block " + blockState.getBlock());
         boolean containsRequiredTags = tagChecker(blockState, tagKeyWhitelist);
-        EmbyTweaks.LOGGER.info("Checking tag blacklist for block " + blockState.getBlock());
         boolean missingBlockedTags = !tagChecker(blockState, tagKeyBlacklist, true);
-        EmbyTweaks.LOGGER.info("containsRequiredTags: %s, missingBlockedTags: %s".formatted(containsRequiredTags, missingBlockedTags));
         return (containsRequiredTags && missingBlockedTags);
     }
 }
