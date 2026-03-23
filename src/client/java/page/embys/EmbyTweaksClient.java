@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 public class EmbyTweaksClient implements ClientModInitializer {
 	public static final HashMap<BlockSet, BlockFamily> BLOCK_FAMILY_MAP = new HashMap<>();
 	public static final HashMap<WoodBlockSet, EntityModelLayer> BOAT_MODEL_LAYER_MAP = new HashMap<>();
+	public static final HashMap<WoodBlockSet, EntityModelLayer> CHEST_BOAT_MODEL_LAYER_MAP = new HashMap<>();
 
 	@Override
 	public void onInitializeClient() {
@@ -43,6 +44,7 @@ public class EmbyTweaksClient implements ClientModInitializer {
 		for (BlockSet blockSet : EmbyTweaks.BLOCK_SET_REGISTRY.getBlockSets()) {
 			if (blockSet instanceof WoodBlockSet woodBlockSet) {
 				BOAT_MODEL_LAYER_MAP.put(woodBlockSet, new EntityModelLayer(EmbyTweaks.id("boat/" + woodBlockSet.identifier.getPath()), "main"));
+				CHEST_BOAT_MODEL_LAYER_MAP.put(woodBlockSet, new EntityModelLayer(EmbyTweaks.id("chest_boat/" + woodBlockSet.identifier.getPath()), "main"));
 			}
 		}
 	}
@@ -50,15 +52,23 @@ public class EmbyTweaksClient implements ClientModInitializer {
 	public static void registerModelLayers(BiConsumer<EntityModelLayer, Supplier<TexturedModelData>> consumer) {
 		for (BlockSet blockSet : EmbyTweaks.BLOCK_SET_REGISTRY.getBlockSets()) {
 			if (blockSet instanceof WoodBlockSet woodBlockSet) {
-				consumer.accept(new EntityModelLayer(EmbyTweaks.id("boat/" + woodBlockSet.identifier.getPath()), "main"), BoatEntityModel::getTexturedModelData);
+				consumer.accept(
+						BOAT_MODEL_LAYER_MAP.get(woodBlockSet),
+						BoatEntityModel::getTexturedModelData
+				);
+				consumer.accept(
+						CHEST_BOAT_MODEL_LAYER_MAP.get(woodBlockSet),
+						BoatEntityModel::getChestTexturedModelData
+				);
 			}
-		};
+		}
 	}
 
 	public static void registerEntityRenderers(BiConsumer<EntityType<? extends Entity>, EntityRendererFactory> consumer) {
 		for (BlockSet blockSet : EmbyTweaks.BLOCK_SET_REGISTRY.getBlockSets()) {
 			if (blockSet instanceof WoodBlockSet woodBlockSet) {
 				consumer.accept(woodBlockSet.boat.get(), context -> new BoatEntityRenderer(context, BOAT_MODEL_LAYER_MAP.get(blockSet)));
+				consumer.accept(woodBlockSet.chestBoat.get(), context -> new BoatEntityRenderer(context, CHEST_BOAT_MODEL_LAYER_MAP.get(blockSet)));
 			}
 		};
 	}
