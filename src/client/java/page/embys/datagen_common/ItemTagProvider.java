@@ -2,10 +2,13 @@ package page.embys.datagen_common;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.item.Item;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.Item;
 import net.minecraft.registry.*;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 import page.embys.common.BlockSet;
 import page.embys.common.StoneBlockSet;
@@ -14,46 +17,46 @@ import page.embys.common.WoodBlockSet;
 import java.util.concurrent.CompletableFuture;
 
 public class ItemTagProvider extends FabricTagProvider.ItemTagProvider {
-    public ItemTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+    public ItemTagProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 
     protected void generateBlockSetTags(BlockSet blockSet) {
         String toolType;
         if (blockSet instanceof StoneBlockSet stoneBlockSet) {
-            getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("walls"))).add(Registries.ITEM.getId(stoneBlockSet.wallBlockItem));
+            getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("walls"))).addElement(BuiltInRegistries.ITEM.getKey(stoneBlockSet.wallBlockItem));
         }
         if (blockSet instanceof WoodBlockSet woodBlockSet) {
             if (woodBlockSet.getIsFlammable()) {
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("logs_that_burn"))).add(Registries.ITEM.getId(woodBlockSet.logBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("logs_that_burn"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.logBlockItem));
             } else {
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("non_flammable_wood"))).add(Registries.ITEM.getId(woodBlockSet.logBlockItem));
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("non_flammable_wood"))).add(Registries.ITEM.getId(woodBlockSet.woodBlockItem));
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("non_flammable_wood"))).add(Registries.ITEM.getId(woodBlockSet.strippedLogBlockItem));
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("non_flammable_wood"))).add(Registries.ITEM.getId(woodBlockSet.strippedWoodBlockItem));
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("non_flammable_wood"))).add(Registries.ITEM.getId(woodBlockSet.planksBlockItem));
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("non_flammable_wood"))).add(Registries.ITEM.getId(woodBlockSet.fenceBlockItem));
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("non_flammable_wood"))).add(Registries.ITEM.getId(woodBlockSet.fenceGateBlockItem));
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("non_flammable_wood"))).add(Registries.ITEM.getId(woodBlockSet.doorBlockItem));
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("non_flammable_wood"))).add(Registries.ITEM.getId(woodBlockSet.trapdoorBlockItem));
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("non_flammable_wood"))).add(Registries.ITEM.getId(woodBlockSet.pressurePlateBlockItem));
-                getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("non_flammable_wood"))).add(Registries.ITEM.getId(woodBlockSet.buttonBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("non_flammable_wood"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.logBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("non_flammable_wood"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.woodBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("non_flammable_wood"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.strippedLogBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("non_flammable_wood"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.strippedWoodBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("non_flammable_wood"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.planksBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("non_flammable_wood"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.fenceBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("non_flammable_wood"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.fenceGateBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("non_flammable_wood"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.doorBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("non_flammable_wood"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.trapdoorBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("non_flammable_wood"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.pressurePlateBlockItem));
+                getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("non_flammable_wood"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.buttonBlockItem));
             }
-            getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("logs"))).add(Registries.ITEM.getId(woodBlockSet.logBlockItem));
-            getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("planks"))).add(Registries.ITEM.getId(woodBlockSet.planksBlockItem));
-            getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("pressure_plates"))).add(Registries.ITEM.getId(woodBlockSet.pressurePlateBlockItem));
-            getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("wooden_slabs"))).add(Registries.ITEM.getId(woodBlockSet.slabBlockItem));
-            getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("wooden_stairs"))).add(Registries.ITEM.getId(woodBlockSet.stairsBlockItem));
-            getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("wooden_fences"))).add(Registries.ITEM.getId(woodBlockSet.fenceBlockItem));
-            getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("doors"))).add(Registries.ITEM.getId(woodBlockSet.doorBlockItem));
-            getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("wooden_doors"))).add(Registries.ITEM.getId(woodBlockSet.doorBlockItem));
-            getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("trapdoors"))).add(Registries.ITEM.getId(woodBlockSet.trapdoorBlockItem));
-            getTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("fence_gates"))).add(Registries.ITEM.getId(woodBlockSet.fenceGateBlockItem));
+            getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("logs"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.logBlockItem));
+            getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("planks"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.planksBlockItem));
+            getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("pressure_plates"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.pressurePlateBlockItem));
+            getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("wooden_slabs"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.slabBlockItem));
+            getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("wooden_stairs"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.stairsBlockItem));
+            getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("wooden_fences"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.fenceBlockItem));
+            getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("doors"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.doorBlockItem));
+            getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("wooden_doors"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.doorBlockItem));
+            getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("trapdoors"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.trapdoorBlockItem));
+            getOrCreateRawBuilder(TagKey.create(Registries.ITEM, Identifier.parse("fence_gates"))).addElement(BuiltInRegistries.ITEM.getKey(woodBlockSet.fenceGateBlockItem));
         }
     }
 
     @Override
-    protected void configure(RegistryWrapper.@NonNull WrapperLookup wrapperLookup) {
+    protected void addTags(HolderLookup.@NonNull Provider wrapperLookup) {
 
     }
 }

@@ -1,18 +1,32 @@
 package page.embys.common;
 
 import net.minecraft.block.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.TallBlockItem;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.DoubleHighBlockItem;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ButtonBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.PressurePlateBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import page.embys.EmbyTweaks;
 
 import java.util.Collection;
@@ -20,76 +34,76 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class ModBlockHelper {
-    public static Block registerBlock(Identifier identifier, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings blockSettings) {
-        RegistryKey<Block> blockIdentifierKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
-        blockSettings.registryKey(blockIdentifierKey);
+    public static Block registerBlock(Identifier identifier, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties blockSettings) {
+        ResourceKey<Block> blockIdentifierKey = ResourceKey.create(Registries.BLOCK, identifier);
+        blockSettings.setId(blockIdentifierKey);
         Block block = factory.apply(blockSettings);
-        Registry.register(Registries.BLOCK, identifier, block);
+        Registry.register(BuiltInRegistries.BLOCK, identifier, block);
         return block;
     }
 
-    public static DoorBlock registerDoorBlock(Identifier identifier, BlockSetType blockSetType, AbstractBlock.Settings settings) {
+    public static DoorBlock registerDoorBlock(Identifier identifier, BlockSetType blockSetType, BlockBehaviour.Properties settings) {
         return (DoorBlock) registerTypeSetBlock(identifier, blockSetType, settings, DoorBlock::new);
     }
 
-    public static TrapdoorBlock registerTrapdoorBlock(Identifier identifier, BlockSetType blockSetType, AbstractBlock.Settings settings) {
-        return (TrapdoorBlock) registerTypeSetBlock(identifier, blockSetType, settings, TrapdoorBlock::new);
+    public static TrapDoorBlock registerTrapdoorBlock(Identifier identifier, BlockSetType blockSetType, BlockBehaviour.Properties settings) {
+        return (TrapDoorBlock) registerTypeSetBlock(identifier, blockSetType, settings, TrapDoorBlock::new);
     }
 
-    public static Block registerWoodTypeBlock(Identifier identifier, WoodType woodType, AbstractBlock.Settings settings, BiFunction<WoodType, AbstractBlock.Settings, Block> factory) {
-        RegistryKey<Block> blockRegistryKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
-        settings.registryKey(blockRegistryKey);
+    public static Block registerWoodTypeBlock(Identifier identifier, WoodType woodType, BlockBehaviour.Properties settings, BiFunction<WoodType, BlockBehaviour.Properties, Block> factory) {
+        ResourceKey<Block> blockRegistryKey = ResourceKey.create(Registries.BLOCK, identifier);
+        settings.setId(blockRegistryKey);
         Block block = factory.apply(woodType, settings);
-        Registry.register(Registries.BLOCK, identifier, block);
+        Registry.register(BuiltInRegistries.BLOCK, identifier, block);
         return block;
     }
 
-    public static Block registerTypeSetBlock(Identifier identifier, BlockSetType blockSetType, AbstractBlock.Settings settings, BiFunction<BlockSetType, AbstractBlock.Settings, Block> factory) {
-        RegistryKey<Block> blockRegistryKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
-        settings.registryKey(blockRegistryKey);
+    public static Block registerTypeSetBlock(Identifier identifier, BlockSetType blockSetType, BlockBehaviour.Properties settings, BiFunction<BlockSetType, BlockBehaviour.Properties, Block> factory) {
+        ResourceKey<Block> blockRegistryKey = ResourceKey.create(Registries.BLOCK, identifier);
+        settings.setId(blockRegistryKey);
         Block block = factory.apply(blockSetType, settings);
-        Registry.register(Registries.BLOCK, identifier, block);
+        Registry.register(BuiltInRegistries.BLOCK, identifier, block);
         return block;
     }
 
-    public static PressurePlateBlock registerPressurePlateBlock(Identifier identifier, BlockSetType blockSetType, AbstractBlock.Settings settings) {
+    public static PressurePlateBlock registerPressurePlateBlock(Identifier identifier, BlockSetType blockSetType, BlockBehaviour.Properties settings) {
         return (PressurePlateBlock) registerTypeSetBlock(identifier, blockSetType, settings, PressurePlateBlock::new);
     }
 
-    public static ButtonBlock registerButtonBlock(Identifier identifier, BlockSetType blockSetType, int pressTicks, AbstractBlock.Settings settings) {
-        RegistryKey<Block> blockRegistryKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
-        settings.registryKey(blockRegistryKey);
+    public static ButtonBlock registerButtonBlock(Identifier identifier, BlockSetType blockSetType, int pressTicks, BlockBehaviour.Properties settings) {
+        ResourceKey<Block> blockRegistryKey = ResourceKey.create(Registries.BLOCK, identifier);
+        settings.setId(blockRegistryKey);
         ButtonBlock buttonBlock = new ButtonBlock(blockSetType, pressTicks, settings);
-        Registry.register(Registries.BLOCK, identifier, buttonBlock);
+        Registry.register(BuiltInRegistries.BLOCK, identifier, buttonBlock);
         return buttonBlock;
     }
 
-    public static StairsBlock registerStairsBlock(Identifier identifier, AbstractBlock.Settings settings) {
-        RegistryKey<Block> blockIdentifierKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
-        StairsBlock block = new StairsBlock(Blocks.OAK_STAIRS.getDefaultState(), settings.registryKey(blockIdentifierKey));
-        Registry.register(Registries.BLOCK, identifier, block);
+    public static StairBlock registerStairsBlock(Identifier identifier, BlockBehaviour.Properties settings) {
+        ResourceKey<Block> blockIdentifierKey = ResourceKey.create(Registries.BLOCK, identifier);
+        StairBlock block = new StairBlock(Blocks.OAK_STAIRS.defaultBlockState(), settings.setId(blockIdentifierKey));
+        Registry.register(BuiltInRegistries.BLOCK, identifier, block);
         return block;
     }
 
-    public static FenceBlock registerFenceBlock(Identifier identifier, AbstractBlock.Settings settings) {
-        RegistryKey<Block> blockIdentifierKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
-        FenceBlock block = new FenceBlock(settings.registryKey(blockIdentifierKey));
-        Registry.register(Registries.BLOCK, identifier, block);
+    public static FenceBlock registerFenceBlock(Identifier identifier, BlockBehaviour.Properties settings) {
+        ResourceKey<Block> blockIdentifierKey = ResourceKey.create(Registries.BLOCK, identifier);
+        FenceBlock block = new FenceBlock(settings.setId(blockIdentifierKey));
+        Registry.register(BuiltInRegistries.BLOCK, identifier, block);
         return block;
     }
 
-    public static FenceGateBlock registerFenceGateBlock(Identifier identifier, WoodType woodType, AbstractBlock.Settings settings) {
-        RegistryKey<Block> blockIdentifierKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
-        settings.registryKey(blockIdentifierKey);
+    public static FenceGateBlock registerFenceGateBlock(Identifier identifier, WoodType woodType, BlockBehaviour.Properties settings) {
+        ResourceKey<Block> blockIdentifierKey = ResourceKey.create(Registries.BLOCK, identifier);
+        settings.setId(blockIdentifierKey);
         FenceGateBlock block = new FenceGateBlock(woodType, settings);
-        Registry.register(Registries.BLOCK, identifier, block);
+        Registry.register(BuiltInRegistries.BLOCK, identifier, block);
         return block;
     }
 
-    public static SlabBlock registerSlabBlock(Identifier identifier, AbstractBlock.Settings settings) {
-        RegistryKey<Block> blockIdentifierKey = RegistryKey.of(RegistryKeys.BLOCK, identifier);
-        SlabBlock block = new SlabBlock(settings.registryKey(blockIdentifierKey));
-        Registry.register(Registries.BLOCK, identifier, block);
+    public static SlabBlock registerSlabBlock(Identifier identifier, BlockBehaviour.Properties settings) {
+        ResourceKey<Block> blockIdentifierKey = ResourceKey.create(Registries.BLOCK, identifier);
+        SlabBlock block = new SlabBlock(settings.setId(blockIdentifierKey));
+        Registry.register(BuiltInRegistries.BLOCK, identifier, block);
         return block;
     }
 
@@ -100,7 +114,7 @@ public class ModBlockHelper {
     public static boolean tagChecker(BlockState blockState, Collection<TagKey<Block>> tagKeys, boolean anyMatchPasses) {
         boolean allTagsMatch = true;
         for (TagKey<Block> tagKey : tagKeys) {
-            if (!blockState.isIn(tagKey)) {
+            if (!blockState.is(tagKey)) {
                 allTagsMatch = false;
             } else if (anyMatchPasses) {
                 return true;

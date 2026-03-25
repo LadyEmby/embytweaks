@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 
 import net.minecraft.client.data.*;
 
+import net.minecraft.client.data.models.BlockModelGenerators;
 import page.embys.EmbyTweaksClient;
 import page.embys.common.BlockSet;
 import page.embys.common.StoneBlockSet;
@@ -16,15 +17,15 @@ public abstract class ModelProvider extends FabricModelProvider {
         super(output);
     }
 
-    protected void generateBlockSetModels(BlockSet blockSet, BlockStateModelGenerator blockStateModelGenerator) {
+    protected void generateBlockSetModels(BlockSet blockSet, BlockModelGenerators blockStateModelGenerator) {
         if (blockSet instanceof StoneBlockSet stoneBlockSet && EmbyTweaksClient.BLOCK_FAMILY_MAP.get(blockSet) != null) {
-            blockStateModelGenerator.registerCubeAllModelTexturePool(EmbyTweaksClient.BLOCK_FAMILY_MAP.get(blockSet).getBaseBlock()).family(EmbyTweaksClient.BLOCK_FAMILY_MAP.get(blockSet));
+            blockStateModelGenerator.family(EmbyTweaksClient.BLOCK_FAMILY_MAP.get(blockSet).getBaseBlock()).generateFor(EmbyTweaksClient.BLOCK_FAMILY_MAP.get(blockSet));
         } else if (blockSet instanceof WoodBlockSet woodBlockSet && EmbyTweaksClient.BLOCK_FAMILY_MAP.get(blockSet) != null) {
-            blockStateModelGenerator.registerCubeAllModelTexturePool(EmbyTweaksClient.BLOCK_FAMILY_MAP.get(blockSet).getBaseBlock()).family(EmbyTweaksClient.BLOCK_FAMILY_MAP.get(blockSet));
-            blockStateModelGenerator.createLogTexturePool(woodBlockSet.logBlock).log(woodBlockSet.logBlock).wood(woodBlockSet.woodBlock);
-            blockStateModelGenerator.createLogTexturePool(woodBlockSet.strippedLogBlock).log(woodBlockSet.strippedLogBlock).wood(woodBlockSet.strippedWoodBlock);
-            blockStateModelGenerator.registerHangingSign(woodBlockSet.strippedLogBlock, woodBlockSet.hangingSignBlock, woodBlockSet.wallHangingSignBlock);
-            blockStateModelGenerator.registerShelf(woodBlockSet.shelfBlock, woodBlockSet.strippedLogBlock);
+            blockStateModelGenerator.family(EmbyTweaksClient.BLOCK_FAMILY_MAP.get(blockSet).getBaseBlock()).generateFor(EmbyTweaksClient.BLOCK_FAMILY_MAP.get(blockSet));
+            blockStateModelGenerator.woodProvider(woodBlockSet.logBlock).logWithHorizontal(woodBlockSet.logBlock).wood(woodBlockSet.woodBlock);
+            blockStateModelGenerator.woodProvider(woodBlockSet.strippedLogBlock).logWithHorizontal(woodBlockSet.strippedLogBlock).wood(woodBlockSet.strippedWoodBlock);
+            blockStateModelGenerator.createHangingSign(woodBlockSet.strippedLogBlock, woodBlockSet.hangingSignBlock, woodBlockSet.wallHangingSignBlock);
+            blockStateModelGenerator.createShelf(woodBlockSet.shelfBlock, woodBlockSet.strippedLogBlock);
         }
     }
 

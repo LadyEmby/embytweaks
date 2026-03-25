@@ -1,17 +1,17 @@
 package page.embys.kiln;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.AbstractCookingRecipe;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.book.CookingRecipeCategory;
-import net.minecraft.recipe.book.RecipeBookCategories;
-import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.CookingBookCategory;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 
 public class KilnRecipe extends AbstractCookingRecipe {
-    public KilnRecipe(String group, CookingRecipeCategory category, Ingredient input, ItemStack output, float experience, int cookTime) {
+    public KilnRecipe(String group, CookingBookCategory category, Ingredient input, ItemStack output, float experience, int cookTime) {
         super(group, category, input, output, experience, cookTime);
     }
 
@@ -26,16 +26,16 @@ public class KilnRecipe extends AbstractCookingRecipe {
     }
 
     @Override
-    public RecipeBookCategory getRecipeBookCategory() {
-        return switch (this.getCategory()) {
-            case CookingRecipeCategory.BLOCKS -> RecipeBookCategories.FURNACE_BLOCKS;
-            case CookingRecipeCategory.FOOD -> RecipeBookCategories.FURNACE_FOOD;
-            case CookingRecipeCategory.MISC -> RecipeBookCategories.FURNACE_MISC;
+    public RecipeBookCategory recipeBookCategory() {
+        return switch (this.category()) {
+            case CookingBookCategory.BLOCKS -> RecipeBookCategories.FURNACE_BLOCKS;
+            case CookingBookCategory.FOOD -> RecipeBookCategories.FURNACE_FOOD;
+            case CookingBookCategory.MISC -> RecipeBookCategories.FURNACE_MISC;
         };
     }
 
     @Override
-    protected Item getCookerItem() {
+    protected Item furnaceIcon() {
         return KilnMain.KILN_ITEM;
     }
 }

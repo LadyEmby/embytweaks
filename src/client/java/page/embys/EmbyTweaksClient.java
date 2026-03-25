@@ -3,18 +3,18 @@ package page.embys;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.BlockRenderLayer;
-import net.minecraft.client.render.entity.BoatEntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactories;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.model.BoatEntityModel;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.data.family.BlockFamily;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.entity.BoatRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.model.object.boat.BoatModel;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.data.BlockFamily;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import page.embys.common.BlockSet;
 import page.embys.common.WoodBlockSet;
 import page.embys.kiln.KilnMainClient;
@@ -25,50 +25,50 @@ import java.util.function.Supplier;
 
 public class EmbyTweaksClient implements ClientModInitializer {
 	public static final HashMap<BlockSet, BlockFamily> BLOCK_FAMILY_MAP = new HashMap<>();
-	public static final HashMap<WoodBlockSet, EntityModelLayer> BOAT_MODEL_LAYER_MAP = new HashMap<>();
-	public static final HashMap<WoodBlockSet, EntityModelLayer> CHEST_BOAT_MODEL_LAYER_MAP = new HashMap<>();
+	public static final HashMap<WoodBlockSet, ModelLayerLocation> BOAT_MODEL_LAYER_MAP = new HashMap<>();
+	public static final HashMap<WoodBlockSet, ModelLayerLocation> CHEST_BOAT_MODEL_LAYER_MAP = new HashMap<>();
 
 	@Override
 	public void onInitializeClient() {
-		BlockRenderLayerMap.putBlock(Registries.BLOCK.get(Identifier.of(EmbyTweaks.MOD_ID, "charred_door")), BlockRenderLayer.CUTOUT);
-		BlockRenderLayerMap.putBlock(Registries.BLOCK.get(Identifier.of(EmbyTweaks.MOD_ID, "charred_trapdoor")), BlockRenderLayer.CUTOUT);
+		BlockRenderLayerMap.putBlock(BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(EmbyTweaks.MOD_ID, "charred_door")), ChunkSectionLayer.CUTOUT);
+		BlockRenderLayerMap.putBlock(BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(EmbyTweaks.MOD_ID, "charred_trapdoor")), ChunkSectionLayer.CUTOUT);
 
 		KilnMainClient.init();
 
 		createModelLayers();
 		registerModelLayers((a, b) -> EntityModelLayerRegistry.registerModelLayer(a, b::get));
-		registerEntityRenderers(EntityRendererFactories::register);
+		registerEntityRenderers(EntityRenderers::register);
 	}
 
 	public static void createModelLayers() {
 		for (BlockSet blockSet : EmbyTweaks.BLOCK_SET_REGISTRY.getBlockSets()) {
 			if (blockSet instanceof WoodBlockSet woodBlockSet) {
-				BOAT_MODEL_LAYER_MAP.put(woodBlockSet, new EntityModelLayer(EmbyTweaks.id("boat/" + woodBlockSet.identifier.getPath()), "main"));
-				CHEST_BOAT_MODEL_LAYER_MAP.put(woodBlockSet, new EntityModelLayer(EmbyTweaks.id("chest_boat/" + woodBlockSet.identifier.getPath()), "main"));
+				BOAT_MODEL_LAYER_MAP.put(woodBlockSet, new ModelLayerLocation(EmbyTweaks.id("boat/" + woodBlockSet.identifier.getPath()), "main"));
+				CHEST_BOAT_MODEL_LAYER_MAP.put(woodBlockSet, new ModelLayerLocation(EmbyTweaks.id("chest_boat/" + woodBlockSet.identifier.getPath()), "main"));
 			}
 		}
 	}
 
-	public static void registerModelLayers(BiConsumer<EntityModelLayer, Supplier<TexturedModelData>> consumer) {
+	public static void registerModelLayers(BiConsumer<ModelLayerLocation, Supplier<LayerDefinition>> consumer) {
 		for (BlockSet blockSet : EmbyTweaks.BLOCK_SET_REGISTRY.getBlockSets()) {
 			if (blockSet instanceof WoodBlockSet woodBlockSet) {
 				consumer.accept(
 						BOAT_MODEL_LAYER_MAP.get(woodBlockSet),
-						BoatEntityModel::getTexturedModelData
+						BoatModel::createBoatModel
 				);
 				consumer.accept(
 						CHEST_BOAT_MODEL_LAYER_MAP.get(woodBlockSet),
-						BoatEntityModel::getChestTexturedModelData
+						BoatModel::createChestBoatModel
 				);
 			}
 		}
 	}
 
-	public static void registerEntityRenderers(BiConsumer<EntityType<? extends Entity>, EntityRendererFactory> consumer) {
+	public static void registerEntityRenderers(BiConsumer<EntityType<? extends Entity>, EntityRendererProvider> consumer) {
 		for (BlockSet blockSet : EmbyTweaks.BLOCK_SET_REGISTRY.getBlockSets()) {
 			if (blockSet instanceof WoodBlockSet woodBlockSet) {
-				consumer.accept(woodBlockSet.boat.get(), context -> new BoatEntityRenderer(context, BOAT_MODEL_LAYER_MAP.get(blockSet)));
-				consumer.accept(woodBlockSet.chestBoat.get(), context -> new BoatEntityRenderer(context, CHEST_BOAT_MODEL_LAYER_MAP.get(blockSet)));
+				consumer.accept(woodBlockSet.boat.get(), context -> new BoatRenderer(context, BOAT_MODEL_LAYER_MAP.get(blockSet)));
+				consumer.accept(woodBlockSet.chestBoat.get(), context -> new BoatRenderer(context, CHEST_BOAT_MODEL_LAYER_MAP.get(blockSet)));
 			}
 		};
 	}

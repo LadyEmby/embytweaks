@@ -2,9 +2,9 @@ package page.embys;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import net.minecraft.data.family.BlockFamily;
-import net.minecraft.registry.BuiltinRegistries;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.data.BlockFamily;
+import net.minecraft.data.registries.VanillaRegistries;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.util.Util;
 import page.embys.common.BlockSet;
 import page.embys.common.StoneBlockSet;
@@ -29,21 +29,21 @@ public class EmbyTweaksDataGenerator implements DataGeneratorEntrypoint {
 						.slab(woodBlockSet.slabBlock)
 						.stairs(woodBlockSet.stairsBlock)
 						.sign(woodBlockSet.signBlock, woodBlockSet.wallSignBlock)
-						.build();
+						.getFamily();
 			} else if (blockSet instanceof StoneBlockSet stoneBlockSet) {
 				blockFamily = new BlockFamily.Builder(stoneBlockSet.block)
 						.stairs(stoneBlockSet.stairsBlock)
 						.slab(stoneBlockSet.slabBlock)
 						.wall(stoneBlockSet.wallBlock)
-						.build();
+						.getFamily();
 			} else {
 				throw new IllegalStateException();
 			}
 			EmbyTweaksClient.BLOCK_FAMILY_MAP.put(blockSet, blockFamily);
 		}
 
-		CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture = CompletableFuture.supplyAsync(
-				BuiltinRegistries::createWrapperLookup, Util.getMainWorkerExecutor()
+		CompletableFuture<HolderLookup.Provider> completableFuture = CompletableFuture.supplyAsync(
+				VanillaRegistries::createLookup, Util.backgroundExecutor()
 		);
 		FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
 

@@ -1,7 +1,7 @@
 package page.embys;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.core.HolderLookup;
 import org.jspecify.annotations.NonNull;
 import page.embys.charred_wood.CharredWoodMain;
 import page.embys.common.BlockSet;
@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 public class EmbyTweaksEnglishTranslationProvider extends EnglishTranslationProvider {
-    public EmbyTweaksEnglishTranslationProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+    public EmbyTweaksEnglishTranslationProvider(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
         super(dataOutput, registryLookup);
     }
 
     @Override
-    public void generateTranslations(RegistryWrapper.@NonNull WrapperLookup wrapperLookup, @NonNull TranslationBuilder translationBuilder) {
+    public void generateTranslations(HolderLookup.@NonNull Provider wrapperLookup, @NonNull TranslationBuilder translationBuilder) {
         for (BlockSet blockSet : EmbyTweaks.BLOCK_SET_REGISTRY.getBlockSets()) {
             generateBlockSetTranslations(blockSet, translationBuilder);
         }

@@ -1,9 +1,9 @@
 package page.embys.common;
 
 import net.minecraft.block.*;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.resources.Identifier;
 import page.embys.EmbyTweaks;
 
 public abstract class BlockSet {

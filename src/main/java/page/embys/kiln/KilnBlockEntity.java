@@ -1,13 +1,13 @@
 package page.embys.kiln;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.FuelRegistry;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.block.entity.FuelValues;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
 import page.embys.EmbyTweaks;
 
 public class KilnBlockEntity extends AbstractFurnaceBlockEntity {
@@ -16,17 +16,17 @@ public class KilnBlockEntity extends AbstractFurnaceBlockEntity {
     }
 
     @Override
-    protected int getFuelTime(FuelRegistry fuelRegistry, ItemStack stack) {
-        return super.getFuelTime(fuelRegistry, stack) / 2;
+    protected int getBurnDuration(FuelValues fuelRegistry, ItemStack stack) {
+        return super.getBurnDuration(fuelRegistry, stack) / 2;
     }
 
     @Override
-    protected Text getContainerName() {
-        return Text.translatable("container." + EmbyTweaks.MOD_ID + ".kiln");
+    protected Component getDefaultName() {
+        return Component.translatable("container." + EmbyTweaks.MOD_ID + ".kiln");
     }
 
     @Override
-    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
-        return new KilnScreenHandler(syncId, playerInventory, this, this.propertyDelegate);
+    protected AbstractContainerMenu createMenu(int syncId, Inventory playerInventory) {
+        return new KilnScreenHandler(syncId, playerInventory, this, this.dataAccess);
     }
 }

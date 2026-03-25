@@ -2,8 +2,8 @@ package page.embys;
 
 import net.fabricmc.api.ModInitializer;
 
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import page.embys.charred_wood.CharredWoodMain;
@@ -41,7 +41,7 @@ public class EmbyTweaks implements ModInitializer {
 	}
 
 	public static Identifier id(String path) {
-		return Identifier.of(EmbyTweaks.MOD_ID, path);
+		return Identifier.fromNamespaceAndPath(EmbyTweaks.MOD_ID, path);
 	}
 
 	public static <T> Supplier<T> register(Registry<? super T> registry, String name, Supplier<T> value) {

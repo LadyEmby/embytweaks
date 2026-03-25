@@ -2,9 +2,9 @@ package page.embys.common;
 
 import net.minecraft.block.*;
 import net.minecraft.item.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
 import page.embys.EmbyTweaks;
 
 import java.util.Collection;
@@ -18,7 +18,7 @@ public class BlockSetRegistry {
     }
 
     public BlockSet getBlockSet(String name) {
-        return blockSets.get(Identifier.of(EmbyTweaks.MOD_ID, name));
+        return blockSets.get(Identifier.fromNamespaceAndPath(EmbyTweaks.MOD_ID, name));
     }
 
     public Collection<BlockSet> getBlockSets() {

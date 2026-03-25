@@ -1,29 +1,29 @@
 package page.embys.kiln;
 
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.advancement.AdvancementRequirements;
-import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
-import net.minecraft.component.ComponentType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.data.recipe.CookingRecipeJsonBuilder;
-import net.minecraft.data.recipe.CraftingRecipeJsonBuilder;
-import net.minecraft.data.recipe.RecipeExporter;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.AbstractCookingRecipe;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.book.CookingRecipeCategory;
-import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.AdvancementRequirements;
+import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.CookingBookCategory;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import page.embys.EmbyTweaks;
 
@@ -31,21 +31,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class KilnRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
-    private final Map<String, AdvancementCriterion<?>> criteria = new LinkedHashMap<>();
+public class KilnRecipeJsonBuilder implements RecipeBuilder {
+    private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
     private String group;
     private final Ingredient ingredient;
     private final Item output;
     private final RecipeCategory category;
-    private final CookingRecipeCategory cookingCategory;
+    private final CookingBookCategory cookingCategory;
     private final float experience;
     private final int cookingTime;
-    private final AbstractCookingRecipe.RecipeFactory<?> recipeFactory = KilnRecipe::new;
+    private final AbstractCookingRecipe.Factory<?> recipeFactory = KilnRecipe::new;
 
     private KilnRecipeJsonBuilder(
             RecipeCategory category,
-            CookingRecipeCategory cookingCategory,
-            ItemConvertible output,
+            CookingBookCategory cookingCategory,
+            ItemLike output,
             Ingredient input,
             float experience,
             int cookingTime
@@ -61,39 +61,39 @@ public class KilnRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
     public static <T extends AbstractCookingRecipe> KilnRecipeJsonBuilder create(
             Ingredient input,
             RecipeCategory category,
-            ItemConvertible output,
+            ItemLike output,
             float experience,
             int cookingTime
     ) {
         return new KilnRecipeJsonBuilder(category, getCookingCategory(output), output, input, experience, cookingTime);
     }
 
-    public static CookingRecipeCategory getCookingCategory(ItemConvertible output) {
+    public static CookingBookCategory getCookingCategory(ItemLike output) {
         if (getCategory(output) == RecipeCategory.BUILDING_BLOCKS) {
-            return CookingRecipeCategory.BLOCKS;
+            return CookingBookCategory.BLOCKS;
         } else {
-            return CookingRecipeCategory.MISC;
+            return CookingBookCategory.MISC;
         }
     }
 
     @Override
-    public CraftingRecipeJsonBuilder criterion(String name, AdvancementCriterion<?> criterion) {
+    public RecipeBuilder unlockedBy(String name, Criterion<?> criterion) {
         this.criteria.put(name, criterion);
         return this;
     }
 
     @Override
-    public CraftingRecipeJsonBuilder group(@Nullable String group) {
+    public RecipeBuilder group(@Nullable String group) {
         this.group = group;
         return this;
     }
 
     @Override
-    public Item getOutputItem() {
+    public Item getResult() {
         return this.output;
     }
 
-    public static RecipeCategory getCategory(ItemConvertible output) {
+    public static RecipeCategory getCategory(ItemLike output) {
         if (output instanceof BlockItem) {
             return RecipeCategory.BUILDING_BLOCKS;
         } else {
@@ -102,26 +102,26 @@ public class KilnRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
     }
 
     @Override
-    public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> recipeKey) {
+    public void save(RecipeOutput exporter, ResourceKey<Recipe<?>> recipeKey) {
         this.validate(recipeKey);
-        Advancement.Builder builder = exporter.getAdvancementBuilder()
-                .criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeKey))
-                .rewards(AdvancementRewards.Builder.recipe(recipeKey))
-                .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
-        this.criteria.forEach(builder::criterion);
+        Advancement.Builder builder = exporter.advancement()
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(recipeKey))
+                .rewards(net.minecraft.advancements.AdvancementRewards.Builder.recipe(recipeKey))
+                .requirements(AdvancementRequirements.Strategy.OR);
+        this.criteria.forEach(builder::addCriterion);
         System.out.println(this.group);
-        exporter.accept(recipeKey, this.recipeFactory.create(Objects.requireNonNullElse(this.group, ""), this.cookingCategory, this.ingredient, new ItemStack(this.output), this.experience, this.cookingTime), builder.build(recipeKey.getValue().withPrefixedPath("recipes/" + this.category.getName() + "/")));
+        exporter.accept(recipeKey, this.recipeFactory.create(Objects.requireNonNullElse(this.group, ""), this.cookingCategory, this.ingredient, new ItemStack(this.output), this.experience, this.cookingTime), builder.build(recipeKey.identifier().withPrefix("recipes/" + this.category.getFolderName() + "/")));
     }
 
     @Override
-    public void offerTo(RecipeExporter exporter) {
-        System.out.println(RegistryKey.of(RegistryKeys.RECIPE, Registries.ITEM.getId(this.output)));
-        this.offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, Identifier.of(EmbyTweaks.MOD_ID, Registries.ITEM.getId(this.output).getPath() + "_from_kiln")));
+    public void save(RecipeOutput exporter) {
+        System.out.println(ResourceKey.create(Registries.RECIPE, BuiltInRegistries.ITEM.getKey(this.output)));
+        this.save(exporter, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(EmbyTweaks.MOD_ID, BuiltInRegistries.ITEM.getKey(this.output).getPath() + "_from_kiln")));
     }
 
-    public void validate(RegistryKey<Recipe<?>> recipeKey) {
+    public void validate(ResourceKey<Recipe<?>> recipeKey) {
         if (this.criteria.isEmpty()) {
-            throw new IllegalStateException("No way of obtaining recipe " + recipeKey.getValue());
+            throw new IllegalStateException("No way of obtaining recipe " + recipeKey.identifier());
         }
     }
 }

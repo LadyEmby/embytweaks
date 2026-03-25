@@ -2,21 +2,21 @@ package page.embys.kiln;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.data.recipe.CookingRecipeJsonBuilder;
-import net.minecraft.data.recipe.RecipeExporter;
-import net.minecraft.data.recipe.RecipeGenerator;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.AbstractCookingRecipe;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import page.embys.datagen_common.RecipeProvider;
 
 import java.util.AbstractMap;
@@ -63,36 +63,36 @@ public class KilnRecipeProvider extends FabricRecipeProvider {
             new AbstractMap.SimpleEntry<>(ItemTags.SAND, Items.GLASS)
     );
 
-    public KilnRecipeProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+    public KilnRecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 
     @Override
-    protected RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup registryLookup, RecipeExporter exporter) {
-        return new RecipeGenerator(registryLookup, exporter) {
+    protected RecipeProvider createRecipeProvider(HolderLookup.Provider registryLookup, RecipeOutput exporter) {
+        return new RecipeProvider(registryLookup, exporter) {
             @Override
-            public void generate() {
-                RegistryWrapper.Impl<Item> itemLookup = registries.getOrThrow(RegistryKeys.ITEM);
-                createShaped(RecipeCategory.MISC, KilnMain.KILN_ITEM.asItem(), 1)
+            public void buildRecipes() {
+                HolderLookup.RegistryLookup<Item> itemLookup = registries.lookupOrThrow(Registries.ITEM);
+                shaped(RecipeCategory.MISC, KilnMain.KILN_ITEM.asItem(), 1)
                         .pattern(" B ")
                         .pattern("BFB")
                         .pattern(" B ")
-                        .input('B', Items.BRICK)
-                        .input('F', Items.FURNACE)
-                        .criterion(hasItem(Items.BRICKS), conditionsFromItem(Items.BRICKS))
-                        .criterion(hasItem(Items.FURNACE), conditionsFromItem(Items.FURNACE))
-                        .offerTo(exporter, "kiln_crafting");
+                        .define('B', Items.BRICK)
+                        .define('F', Items.FURNACE)
+                        .unlockedBy(getHasName(Items.BRICKS), has(Items.BRICKS))
+                        .unlockedBy(getHasName(Items.FURNACE), has(Items.FURNACE))
+                        .save(output, "kiln_crafting");
 
                 for (Item key : itemMap.keySet()) {
-                    KilnRecipeJsonBuilder.create(Ingredient.ofItem(key), KilnRecipeJsonBuilder.getCategory(itemMap.get(key)), itemMap.get(key), 0.1f, 100)
-                            .criterion(hasItem(key), conditionsFromItem(key))
-                            .offerTo(exporter);
+                    KilnRecipeJsonBuilder.create(Ingredient.of(key), KilnRecipeJsonBuilder.getCategory(itemMap.get(key)), itemMap.get(key), 0.1f, 100)
+                            .unlockedBy(getHasName(key), has(key))
+                            .save(output);
                 }
 
                 for (TagKey<Item> key : tagMap.keySet()) {
-                    KilnRecipeJsonBuilder.create(Ingredient.ofTag(itemLookup.getOrThrow(key)), KilnRecipeJsonBuilder.getCategory(tagMap.get(key)), tagMap.get(key), 0.1f, 100)
-                            .criterion("has_logs", conditionsFromTag(key))
-                            .offerTo(exporter);
+                    KilnRecipeJsonBuilder.create(Ingredient.of(itemLookup.getOrThrow(key)), KilnRecipeJsonBuilder.getCategory(tagMap.get(key)), tagMap.get(key), 0.1f, 100)
+                            .unlockedBy("has_logs", has(key))
+                            .save(output);
                 }
             }
         };
