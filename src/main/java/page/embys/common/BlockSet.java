@@ -1,10 +1,6 @@
 package page.embys.common;
 
-import net.minecraft.block.*;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.resources.Identifier;
-import page.embys.EmbyTweaks;
 
 public abstract class BlockSet {
     private boolean uvLocked = false;

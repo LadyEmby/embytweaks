@@ -2,15 +2,10 @@ package page.embys.datagen_common;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.flag.FeatureFlagSet;
-import page.embys.EmbyTweaks;
 import page.embys.EmbyTweaksClient;
 import page.embys.common.BlockSet;
 import page.embys.common.StoneBlockSet;
@@ -18,8 +13,8 @@ import page.embys.common.WoodBlockSet;
 
 import java.util.concurrent.CompletableFuture;
 
-public abstract class RecipeProvider extends FabricRecipeProvider {
-    public RecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+public abstract class ETRecipeProvider extends FabricRecipeProvider {
+    public ETRecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 

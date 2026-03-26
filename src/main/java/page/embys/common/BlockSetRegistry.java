@@ -1,9 +1,5 @@
 package page.embys.common;
 
-import net.minecraft.block.*;
-import net.minecraft.item.*;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import page.embys.EmbyTweaks;
 

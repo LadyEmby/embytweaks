@@ -7,11 +7,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.HolderLookup;
 import page.embys.common.BlockSet;
-import page.embys.datagen_common.RecipeProvider;
+import page.embys.datagen_common.ETRecipeProvider;
 
 import java.util.concurrent.CompletableFuture;
 
-public class EmbyTweaksRecipeProvider extends RecipeProvider {
+public class EmbyTweaksRecipeProvider extends ETRecipeProvider {
 
     public EmbyTweaksRecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
